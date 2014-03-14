@@ -1,13 +1,10 @@
 require 'puppet/provider/nameservice/objectadd'
 
-# Modified from the default useradd provider.
 Puppet::Type.type(:user).provide :useradd, :parent => Puppet::Provider::NameService::ObjectAdd do
   desc "User management via `useradd` and its ilk.  Note that you will need to
     install Ruby's shadow password library (often known as `ruby-libshadow`)
     if you wish to manage user passwords."
 
-  # NOTE: you may need to add your operatingsystem below to make this provider
-  # work without puppet throwing a warning.
   defaultfor :operatingsystem => [ "CentOS", "Debian", "RedHat", "Ubuntu" ]
   commands :add => "useradd", :delete => "userdel", :modify => "usermod", :password => "chage"
 
@@ -54,7 +51,7 @@ Puppet::Type.type(:user).provide :useradd, :parent => Puppet::Provider::NameServ
   end
 
   def check_system_users
-    if Puppet.version.start_with?("2.7") then
+    if (Puppet.version).match('2.7.\d') then
       if self.class.system_users? and resource.system?
         ["-r"]
       else
@@ -83,7 +80,7 @@ Puppet::Type.type(:user).provide :useradd, :parent => Puppet::Provider::NameServ
     cmd += check_allow_dup
     cmd += check_manage_home
     cmd += check_manage_expiry
-    if Puppet.version.start_with?("2.7") then
+    if (Puppet.version).match('2.7.\d') then
       cmd += check_system_users
     end
     cmd << @resource[:name]
